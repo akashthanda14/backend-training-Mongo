@@ -1,0 +1,19 @@
+# Get all hospitals
+GET http://localhost:3000/api/hospitals
+
+###
+
+# Create a new hospital
+POST http://localhost:3000/api/hospitals
+Content-Type: application/json
+
+{
+  "name": "Test Valley Hospital",
+  "city": "Testville",
+  "image": "https://example.com/images/testvalley.jpg",
+  "speciality": ["General", "Emergency"],
+  "rating": 4.3,
+  "description": "Seeded by test.rest",
+  "facilities": ["Emergency", "Pharmacy"],
+  "contactInfo": { "phone": "+1-555-9999", "email": "test@testvalley.example" }
+}
