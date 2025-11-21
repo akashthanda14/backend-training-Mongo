@@ -1,19 +1,244 @@
-# Get all hospitals
-GET http://localhost:3000/api/hospitals
+# Hospital Management System API Testing
+# Base URL: http://localhost:3000
 
-###
+### Variables (Replace these with actual values after signup/signin)
+@baseUrl = http://localhost:3000
+@token = YOUR_JWT_TOKEN_HERE
+@hospitalId = HOSPITAL_ID_HERE
 
-# Create a new hospital
-POST http://localhost:3000/api/hospitals
+#######################
+# AUTHENTICATION ENDPOINTS
+#######################
+
+### 1. Sign up new user
+POST {{baseUrl}}/api/auth/signup
 Content-Type: application/json
 
 {
-  "name": "Test Valley Hospital",
-  "city": "Testville",
-  "image": "https://example.com/images/testvalley.jpg",
-  "speciality": ["General", "Emergency"],
-  "rating": 4.3,
-  "description": "Seeded by test.rest",
-  "facilities": ["Emergency", "Pharmacy"],
-  "contactInfo": { "phone": "+1-555-9999", "email": "test@testvalley.example" }
+  "username": "johndoe",
+  "email": "john@example.com", 
+  "password": "password123"
 }
+
+### 2. Sign up another user (for testing duplicates)
+POST {{baseUrl}}/api/auth/signup
+Content-Type: application/json
+
+{
+  "username": "janedoe",
+  "email": "jane@example.com", 
+  "password": "password456"
+}
+
+### 3. Sign up with invalid data (missing fields)
+POST {{baseUrl}}/api/auth/signup
+Content-Type: application/json
+
+{
+  "username": "testuser"
+}
+
+### 4. Sign up with invalid email format
+POST {{baseUrl}}/api/auth/signup
+Content-Type: application/json
+
+{
+  "username": "testuser2",
+  "email": "invalid-email", 
+  "password": "password123"
+}
+
+### 5. Sign up with short password
+POST {{baseUrl}}/api/auth/signup
+Content-Type: application/json
+
+{
+  "username": "testuser3",
+  "email": "test3@example.com", 
+  "password": "123"
+}
+
+### 6. Sign in with valid credentials
+POST {{baseUrl}}/api/auth/signin
+Content-Type: application/json
+
+{
+  "email": "john@example.com",
+  "password": "password123"
+}
+
+### 7. Sign in with invalid email
+POST {{baseUrl}}/api/auth/signin
+Content-Type: application/json
+
+{
+  "email": "nonexistent@example.com",
+  "password": "password123"
+}
+
+### 8. Sign in with wrong password
+POST {{baseUrl}}/api/auth/signin
+Content-Type: application/json
+
+{
+  "email": "john@example.com",
+  "password": "wrongpassword"
+}
+
+### 9. Sign in with missing fields
+POST {{baseUrl}}/api/auth/signin
+Content-Type: application/json
+
+{
+  "email": "john@example.com"
+}
+
+#######################
+# HOSPITAL ENDPOINTS
+#######################
+
+### 10. Get all hospitals (public access)
+GET {{baseUrl}}/api/hospitals
+
+### 11. Get all hospitals with authentication
+GET {{baseUrl}}/api/hospitals
+Authorization: Bearer {{token}}
+
+### 12. Create a new hospital (public access)
+POST {{baseUrl}}/api/hospitals
+Content-Type: application/json
+
+{
+  "name": "City General Hospital",
+  "city": "New York",
+  "image": "https://example.com/images/city-general.jpg",
+  "speciality": ["Cardiology", "Neurology", "Emergency"],
+  "rating": 4.5,
+  "description": "Leading medical facility with state-of-the-art equipment",
+  "facilities": ["Emergency Room", "ICU", "Pharmacy", "Radiology"],
+  "contactInfo": {
+    "phone": "+1-555-0100",
+    "email": "info@citygeneral.com",
+    "website": "https://citygeneral.com"
+  }
+}
+
+### 13. Create another hospital with different data
+POST {{baseUrl}}/api/hospitals
+Content-Type: application/json
+
+{
+  "name": "Lakeside Medical Center",
+  "city": "Seattle",
+  "image": "https://example.com/images/lakeside.jpg",
+  "speciality": ["Orthopedics", "Rehabilitation", "Sports Medicine"],
+  "rating": 4.2,
+  "description": "Specialized in orthopedic surgery and rehabilitation",
+  "facilities": ["Surgery Center", "Rehab Unit", "Physical Therapy"],
+  "contactInfo": {
+    "phone": "+1-555-0200",
+    "email": "contact@lakeside.com"
+  }
+}
+
+### 14. Create hospital with authentication
+POST {{baseUrl}}/api/hospitals
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Green Valley Clinic",
+  "city": "Portland",
+  "image": "https://example.com/images/greenvalley.jpg",
+  "speciality": ["Pediatrics", "Family Medicine", "Preventive Care"],
+  "rating": 4.7,
+  "description": "Community-focused clinic for families",
+  "facilities": ["Outpatient Care", "Vaccination Center"],
+  "contactInfo": {
+    "phone": "+1-555-0300",
+    "email": "hello@greenvalley.com",
+    "website": "https://greenvalley.com"
+  }
+}
+
+### 15. Create hospital with missing required fields
+POST {{baseUrl}}/api/hospitals
+Content-Type: application/json
+
+{
+  "name": "Incomplete Hospital",
+  "city": "Test City"
+}
+
+### 16. Create hospital with invalid rating
+POST {{baseUrl}}/api/hospitals
+Content-Type: application/json
+
+{
+  "name": "Bad Rating Hospital",
+  "city": "Test City",
+  "image": "https://example.com/image.jpg",
+  "speciality": ["General"],
+  "rating": 10,
+  "description": "Testing invalid rating"
+}
+
+#######################
+# PROTECTED ROUTE EXAMPLES
+#######################
+
+### 17. Access hospitals with valid token
+GET {{baseUrl}}/api/hospitals
+Authorization: Bearer {{token}}
+
+### 18. Access hospitals with invalid token
+GET {{baseUrl}}/api/hospitals
+Authorization: Bearer invalid.token.here
+
+### 19. Access hospitals with malformed Authorization header
+GET {{baseUrl}}/api/hospitals
+Authorization: {{token}}
+
+### 20. Access hospitals without Authorization header (if protected)
+GET {{baseUrl}}/api/hospitals
+
+#######################
+# ERROR HANDLING TESTS
+#######################
+
+### 21. Test non-existent endpoint
+GET {{baseUrl}}/api/nonexistent
+
+### 22. Test wrong HTTP method
+DELETE {{baseUrl}}/api/auth/signup
+
+### 23. Test malformed JSON
+POST {{baseUrl}}/api/hospitals
+Content-Type: application/json
+
+{
+  "name": "Test Hospital",
+  "city": "Test City"
+  // Invalid JSON comment
+
+### 24. Test empty request body
+POST {{baseUrl}}/api/hospitals
+Content-Type: application/json
+
+{}
+
+#######################
+# INSTRUCTIONS
+#######################
+
+# 1. Start your server: node server.js
+# 2. Run signup endpoint (#1) to create a user
+# 3. Run signin endpoint (#6) with the same credentials
+# 4. Copy the JWT token from signin response
+# 5. Replace {{token}} variable at the top with your actual token
+# 6. Test protected endpoints with your token
+# 7. After creating hospitals, copy a hospital ID for future endpoints
+
+# Example of replacing variables:
+# @token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+# @hospitalId = 507f1f77bcf86cd799439011
