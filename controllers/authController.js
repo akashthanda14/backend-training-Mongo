@@ -15,8 +15,7 @@ export const signup = async (req, res) => {
     const result = await authService.signup({ username, email, password });
     
     res.status(201).json({
-      message: "User created successfully",
-      token: result.token,
+      message: result.message,
       user: result.user
     });
   } catch (error) {
@@ -49,6 +48,58 @@ export const signin = async (req, res) => {
   } catch (error) {
     res.status(401).json({
       message: "Authentication failed",
+      error: error.message
+    });
+  }
+};
+
+// Send OTP to email
+export const sendOTP = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    // Validate required fields
+    if (!email) {
+      return res.status(400).json({
+        message: "Please provide email"
+      });
+    }
+
+    const result = await authService.sendOTP(email);
+
+    res.status(200).json({
+      message: result.message
+    });
+  } catch (error) {
+    res.status(400).json({
+      message: "Failed to send OTP",
+      error: error.message
+    });
+  }
+};
+
+// Verify OTP and complete authentication
+export const verifyOTP = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+
+    // Validate required fields
+    if (!email || !otp) {
+      return res.status(400).json({
+        message: "Please provide email and OTP"
+      });
+    }
+
+    const result = await authService.verifyOTP(email, otp);
+
+    res.status(200).json({
+      message: "OTP verified successfully",
+      token: result.token,
+      user: result.user
+    });
+  } catch (error) {
+    res.status(400).json({
+      message: "OTP verification failed",
       error: error.message
     });
   }

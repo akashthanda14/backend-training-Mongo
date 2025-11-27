@@ -17,3 +17,43 @@ Content-Type: application/json
   "facilities": ["Emergency", "Pharmacy"],
   "contactInfo": { "phone": "+1-555-9999", "email": "test@testvalley.example" }
 }
+
+###
+
+# OTP Authentication Endpoints
+
+### Signup (will send OTP automatically)
+POST http://localhost:3000/api/auth/signup
+Content-Type: application/json
+
+{
+  "username": "akashthanda2121",
+  "email": "akashthanda209@gmail.com",
+  "password": "password123"
+}
+
+### Signin (requires email verification first)
+POST http://localhost:3000/api/auth/signin
+Content-Type: application/json
+
+{
+  "email": "akashthanda14@gmail.com",
+  "password": "password123"
+}
+
+### Send OTP to email
+POST http://localhost:3000/api/auth/send-otp
+Content-Type: application/json
+
+{
+  "email": "akashthanda14@gmail.com"
+}
+
+### Verify OTP
+POST http://localhost:3000/api/auth/verify-otp
+Content-Type: application/json
+
+{
+  "email": "akashthanda209@gmail.com",
+  "otp": "995519"
+}
